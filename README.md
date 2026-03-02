@@ -1,59 +1,79 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel API Backend - Documentation
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Repository ini berisi backend API untuk aplikasi Next Level yang dibangun menggunakan Laravel 12 dan Laravel Sanctum untuk autentikasi.
 
-## About Laravel
+## Stack Teknologi
+- **Framework:** Laravel 12
+- **Authentication:** Laravel Sanctum
+- **Database:** MySQL / SQLite (Sesuai konfigurasi `.env`)
+- **PHP Version:** ^8.2
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Persyaratan Sistem
+- PHP >= 8.2
+- Composer
+- MySQL atau PostgreSQL (Opsional, bisa menggunakan SQLite)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instalasi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. **Clone Repository dan Masuk ke Folder**
+   ```bash
+   git clone <repository-url-backend>
+   cd backend
+   ```
 
-## Learning Laravel
+2. **Install Dependensi**
+   ```bash
+   composer install
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+3. **Konfigurasi Environment**
+   Salin file `.env.example` ke `.env` dan sesuaikan konfigurasi database.
+   ```bash
+   cp .env.example .env
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4. **Generate App Key**
+   ```bash
+   php artisan key:generate
+   ```
 
-## Laravel Sponsors
+5. **Migrasi Database & Seeder**
+   ```bash
+   php artisan migrate --seed
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+6. **Jalankan Server**
+   ```bash
+   php artisan serve
+   ```
+   API akan berjalan secara default di `http://127.0.0.1:8000`.
 
-### Premium Partners
+## Dokumentasi API
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Semua endpoint API diawali dengan prefix `/api`.
 
-## Contributing
+### Autentikasi
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Method | Endpoint | Deskripsi | Akses |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/login` | Login user untuk mendapatkan token | Public |
+| `POST` | `/api/logout` | Logout dan menghapus session token | Private (Sanctum) |
 
-## Code of Conduct
+### User Management (CRUD)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Semua endpoint di bawah ini memerlukan header `Authorization: Bearer <token-kamu>`.
 
-## Security Vulnerabilities
+| Method | Endpoint | Deskripsi |
+| :--- | :--- | :--- |
+| `GET` | `/api/user` | Mendapatkan data profil user yang sedang login |
+| `GET` | `/api/users` | Mengambil semua daftar user |
+| `POST` | `/api/users` | Menambahkan user baru |
+| `GET` | `/api/users/{id}` | Melihat detail user berdasarkan ID |
+| `PUT/PATCH` | `/api/users/{id}` | Mengupdate data user berdasarkan ID |
+| `DELETE` | `/api/users/{id}` | Menghapus user berdasarkan ID |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Struktur Penting
+- `app/Http/Controllers/Api`: Folder berisi logic API.
+- `routes/api.php`: File konfigurasi route API.
+- `app/Models`: Model Eloquent untuk berinteraksi dengan database.
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
