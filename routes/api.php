@@ -1,14 +1,13 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\PageController;
-use App\Http\Controllers\Api\ServiceController;
-use App\Http\Controllers\Api\PortfolioController;
 use App\Http\Controllers\Api\ContactMessageController;
+use App\Http\Controllers\Api\PageController;
+use App\Http\Controllers\Api\PortfolioController;
+use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\UserController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 //AUTH
 Route::prefix('auth')->group(function () {
