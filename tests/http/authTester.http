@@ -1,5 +1,5 @@
 ### LogIn
-POST http://127.0.0.1:8000/api/login
+POST http://127.0.0.1:8000/api/auth/login
 Accept: application/json
 Content-Type: application/json
 
@@ -9,7 +9,7 @@ Content-Type: application/json
 }
 
 ### Logout
-POST http://127.0.0.1:8000/api/logout
+POST http://127.0.0.1:8000/api/auth/logout
 Accept: application/json
 Authorization: bearer
 
@@ -19,7 +19,7 @@ Accept: application/json
 Authorization: bearer
 
 
-### CRUD (Create, Update, Delete) ###
+### CRUD User (Create, Update, Delete) ###
 
 ### Create User
 POST http://127.0.0.1:8000/api/users
@@ -51,3 +51,7 @@ Authorization: bearer
 DELETE http://127.0.0.1:8000/api/users/2
 Accept: application/json
 Authorization: bearer
+
+
+
+
