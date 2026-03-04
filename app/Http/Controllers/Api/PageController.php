@@ -14,7 +14,7 @@ class PageController extends Controller
     public function index()
     {
         $pages = Page::all();
-        return response()->json($pages);
+        return response()->json(['data' => $pages]);
     }
 
     /**
@@ -38,7 +38,7 @@ class PageController extends Controller
     public function show($id)
     {
         $page = Page::findOrFail($id);
-        return response()->json($page);
+        return response()->json(['data' => $page]);
     }
 
     /**
