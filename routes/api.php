@@ -1,10 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\PageController;
-use App\Http\Controllers\Api\PortfolioController;
-use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,14 +14,8 @@ Route::prefix('auth')->group(function () {
 });
 
 //PUBLIC ROUTES
-Route::get('/pages', [PageController::class, 'index']);
-Route::get('/pages/{id}', [PageController::class, 'show']);
-
-Route::get('/services', [ServiceController::class, 'index']);
-Route::get('/portfolios', [PortfolioController::class, 'index']);
-Route::get('/portfolios/{id}', [PortfolioController::class, 'show']);
-
-Route::post('/contact-messages', [ContactMessageController::class, 'store']);
+Route::get('/pages', [PageController::class, 'publicIndex']); // untuk navigasi publik
+Route::get('/pages/{slug}', [PageController::class, 'show']); // detail halaman by slug
 
 //ADMIN ROUTES
 Route::middleware('auth:sanctum')->group(function () {
@@ -33,12 +24,13 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
+    // User
     Route::apiResource('users', UserController::class);
 
-    Route::apiResource('pages', PageController::class)->except(['index', 'show']);
-    Route::apiResource('services', ServiceController::class)->except(['index', 'show']);
-    Route::apiResource('portfolios', PortfolioController::class)->except(['index', 'show']);
-
-    Route::get('/contact-messages', [ContactMessageController::class, 'index']);
-    Route::delete('/contact-messages/{id}', [ContactMessageController::class, 'destroy']);
+    // Page
+    Route::get('/admin/pages', [PageController::class, 'adminIndex']); // list untuk admin
+    Route::get('/admin/pages/{page}/edit', [PageController::class, 'edit']); // ambil page untuk edit
+    Route::post('/admin/pages', [PageController::class, 'store']); // create page
+    Route::put('/admin/pages/{page}', [PageController::class, 'update']); // update page
+    Route::delete('/admin/pages/{page}', [PageController::class, 'destroy']); // delete page
 });
