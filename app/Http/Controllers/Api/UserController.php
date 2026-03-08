@@ -37,7 +37,7 @@ class UserController extends Controller
 
         // Simpan file jika ada
         if ($request->hasFile('avatar')) {
-            $validate['avatar'] = $request->file('avatar')->store('avatars', 'public');
+            $validate['avatar'] = $this->uploadImage($request->file('avatar'));
         }
 
         $user = User::create([
@@ -91,11 +91,10 @@ class UserController extends Controller
         if ($request->hasFile('avatar')) {
             // Jika avatar sudah ada maka hapus
             if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
+                $this->deleteImage($user->avatar);
             }
 
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $validate['avatar'] = $avatarPath;
+            $validate['avatar'] = $this->uploadImage($request->file('avatar'));
         }
 
         $user->update($validate);
@@ -121,5 +120,25 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User deleted successfully'
         ], 200);
+    }
+
+
+    // Custom functions //
+
+    // Upload gambar
+    private function uploadImage($file)
+    {
+        $filename = time() . '_' . $file->getClientOriginalName();
+        return $file->storeAs('avatars', $filename, 'public');
+
+        return Storage::url($filename);
+    }
+
+    // Hapus gambar
+    private function deleteImage($path)
+    {
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
     }
 }

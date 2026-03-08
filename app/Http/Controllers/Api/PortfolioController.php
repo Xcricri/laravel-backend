@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Portfolio;
+use App\Models\PortfolioImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PortfolioController extends Controller
 {
@@ -13,8 +16,11 @@ class PortfolioController extends Controller
      */
     public function index()
     {
-        $portofolios = Portfolio::all();
-        return response()->json($portofolios);
+        $portofolios = Portfolio::with('images')->latest()->get();
+        return response()->json([
+            'success' => true,
+            'data' => $portofolios
+        ]);
     }
 
     /**
@@ -23,52 +29,139 @@ class PortfolioController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required',
-            'slug' => 'required|unique:portfolios',
-            'short_description' => 'required',
-            'full_content' => 'required',
-            'main_image_url' => 'required'
+            'title' => 'required|string|max:255',
+            'short_description' => 'required|string|max:500',
+            'full_content' => 'required|string',
+            'project_date' => 'required|date',
+            'main_image' => 'required|image|max:2048',
+            'images.*' => 'image|max:2048',
+            'captions.*' => 'nullable|string|max:255'
         ]);
+
+        $validated['main_image_url'] = $this->uploadImage($request->file('main_image'));
+
+        $validated['slug'] = Str::slug($validated['title']);
 
         $portfolio = Portfolio::create($validated);
 
-        return response()->json($portfolio, 201);
+        $this->saveImages($portfolio->id, $request);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Portfolio berhasil ditambahkan!',
+            'data' => $portfolio
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show($slug)
     {
-        $portfolio = Portfolio::findOrFail($id);
-        return response()->json($portfolio);
+        $portfolio = Portfolio::where('slug', $slug)->with('images')->firstOrFail();
+
+        return response()->json([
+            'success' => true,
+            'data' => $portfolio
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Portfolio $portfolio)
     {
-        $portfolio = Portfolio::findOrFail($id);
         $validated = $request->validate([
-            'title' => 'required',
-            'slug' => 'required|unique:portfolios,slug,' . $portfolio->id,
-            'short_description' => 'required',
-            'full_content' => 'required',
-            'main_image_url' => 'required'
+            'title' => 'sometimes|string|max:255',
+            'short_description' => 'sometimes|string|max:500',
+            'full_content' => 'sometimes|string',
+            'project_date' => 'sometimes|date',
+            'main_image' => 'nullable|image|max:2048',
+            'images.*' => 'image|max:2048',
+            'captions.*' => 'nullable|string|max:255'
         ]);
 
+        if ($request->hasFile('main_image')) {
+            if ($portfolio->main_image_url) {
+                $this->deleteFile($portfolio->main_image_url);
+            }
+
+            $validated['main_image_url'] = $this->uploadImage($request->file('main_image'));
+        }
+
         $portfolio->update($validated);
-        return response()->json($portfolio);
+
+        $this->saveImages($portfolio->id, $request);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Portfolio berhasil diupdate!',
+            'data' => $portfolio->load('images')
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Portfolio $portfolio)
     {
-        $portfolio = Portfolio::findOrFail($id);
+        if ($portfolio->main_image_url) {
+            $this->deleteFile($portfolio->main_image_url);
+        }
+
         $portfolio->delete();
-        return response()->json(['message' => 'Portfolio deleted successfully']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Portfolio deleted successfully'
+        ]);
+    }
+
+    // Custom functions //
+
+    public function getId($id)
+    {
+        $response = Portfolio::with('images')->findOrFail($id);
+        return response()->json([
+            'data' => $response
+        ]);
+    }
+
+    // Upload Image
+    private function uploadImage($file)
+    {
+        return $file->store('portfolios', 'public');
+    }
+
+    // Menyimpan banyak image
+    private function saveImages($portfolioId, Request $request)
+    {
+        if (!$request->hasFile('images')) {
+            return;
+        }
+
+        // Hapus gallery images lama
+        $oldImages = PortfolioImage::where('portfolio_id', $portfolioId)->get();
+        foreach ($oldImages as $oldImage) {
+            $this->deleteFile($oldImage->image_url);
+            $oldImage->delete();
+        }
+
+        foreach ($request->file('images') as $index => $image) {
+            PortfolioImage::create([
+                'portfolio_id' => $portfolioId,
+                'image_url' => $this->uploadImage($image),
+                'caption' => $request->captions[$index] ?? null
+            ]);
+        }
+    }
+
+    // Menghapus image
+    private function deleteFile($url)
+    {
+        $path = str_replace('/storage/', '', $url);
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
     }
 }

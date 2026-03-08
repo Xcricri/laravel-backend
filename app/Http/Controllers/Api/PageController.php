@@ -15,8 +15,8 @@ class PageController extends Controller
      */
     public function index()
     {
-        $pages = Page::all();
-        return response()->json(['data' => $pages]);
+        $response = Page::all();
+        return response()->json(['data' => $response]);
     }
 
     /**
@@ -30,14 +30,13 @@ class PageController extends Controller
             'main_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $page = Page::create([
-            'title' => $validated['title'],
-            'slug' => Str::slug($validated['title']),
-            'content' => $validated['content'],
-            'main_image_url' => $request->hasFile('main_image')
-                ? $this->uploadImage($request->file('main_image'))
-                : null
-        ]);
+        if ($request->hasFile('main_image')) {
+            $validated['main_image_url'] = $this->uploadImage($request->file('main_image'));
+        }
+
+        $validated['slug'] = Str::slug($validated['title']);
+
+        $page = Page::create($validated);
 
         return response()->json([
             'success' => true,
@@ -52,7 +51,10 @@ class PageController extends Controller
     public function show($slug)
     {
         $page = Page::where('slug', $slug)->firstOrFail();
-        return response()->json(['data' => $page]);
+
+        return response()->json([
+            'data' => $page
+        ]);
     }
 
     /**
@@ -61,23 +63,23 @@ class PageController extends Controller
     public function update(Request $request, Page $page)
     {
         $validated = $request->validate([
-            'title' => 'string|max:255',
-            'content' => 'string',
+            'title' => 'sometimes|string|max:255',
+            'content' => 'sometimes|string',
             'main_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $updateData = [
-            'title' => $validated['title'],
-            'slug' => Str::slug($validated['title']),
-            'content' => $validated['content'],
-        ];
-
-        // Upload image jika ada yang baru
-        if ($request->hasFile('main_image')) {
-            $updateData['main_image_url'] = $this->uploadImage($request->file('main_image'));
+        if (isset($validated['title'])) {
+            $validated['slug'] = Str::slug($validated['title']);
         }
 
-        $page->update($updateData);
+        if ($request->hasFile('main_image')) {
+            if ($page->main_image_url) {
+                $this->deleteFile($page->main_image_url);
+            }
+            $validated['main_image_url'] = $this->uploadImage($request->file('main_image'));
+        }
+
+        $page->update($validated);
 
         return response()->json([
             'success' => true,
@@ -91,6 +93,10 @@ class PageController extends Controller
      */
     public function destroy(Page $page)
     {
+        if ($page->main_image_url) {
+            $this->deleteFile($page->main_image_url);
+        }
+
         $page->delete();
 
         return response()->json([
@@ -99,18 +105,15 @@ class PageController extends Controller
         ]);
     }
 
-    // Custom function //
-
-    // Admin: List semua pages
-    public function adminIndex()
-    {
-        return Page::latest()->paginate(20);
-    }
+    // Custom Functions //
 
     // Admin: Get page untuk edit
-    public function edit(Page $page)
+    public function getId($id)
     {
-        return response()->json(['data' => $page]);
+        $page = Page::findOrFail($id);
+        return response()->json([
+            'data' => $page
+        ]);
     }
 
     // Public: List semua pages untuk navigation
@@ -119,11 +122,19 @@ class PageController extends Controller
         return Page::select('id', 'title', 'slug')->get();
     }
 
-    // Helper
+    // Upload gambar
     private function uploadImage($file)
     {
         $filename = time() . '_' . $file->getClientOriginalName();
-        $path = $file->storeAs('pages', $filename, 'public'); // disk public
-        return Storage::url($path); // otomatis menghasilkan /storage/...
+        return $file->storeAs('pages', $filename, 'public');
+    }
+
+    // Hapus gambar
+    private function deleteFile($url)
+    {
+        $path = ltrim(str_replace('/storage/', '', $url), '/');
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
     }
 }
