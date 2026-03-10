@@ -81,6 +81,10 @@ class PortfolioController extends Controller
             'captions.*' => 'nullable|string|max:255'
         ]);
 
+        if (isset($validated['title'])) {
+            $validated['slug'] = Str::slug($validated['title']);
+        }
+
         if ($request->hasFile('main_image')) {
             if ($portfolio->main_image_url) {
                 $this->deleteFile($portfolio->main_image_url);
