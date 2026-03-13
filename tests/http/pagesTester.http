@@ -56,31 +56,31 @@ Accept: application/json
 POST http://127.0.0.1:8000/api/services
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer
+Authorization: Bearer 
 
 {
     "title": "Web Development",
     "description": "Layanan pembuatan website profesional",
-    "icon_url": "fa-solid fa-code"
+    "main_image_url": "www.example.com/image.jpg"
 }
 
 ### Update Service
 PUT http://127.0.0.1:8000/api/services/{id}
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer
+Authorization: Bearer 
 
 
 {
     "title": "Web Development Updated",
     "description": "Layanan pembuatan website profesional yang diperbarui",
-    "icon_url": "fa-solid fa-code"
+    "main_image_url": "www.example.com/image-updated.jpg"
 }
 
 ### Delete Service
 DELETE http://127.0.0.1:8000/api/services/{id}
 Accept: application/json
-Authorization: Bearer
+Authorization: Bearer 
 
 
 ### Portofolios ###

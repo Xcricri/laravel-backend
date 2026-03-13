@@ -17,9 +17,8 @@ class UserController extends Controller
     {
         $users = User::latest()->get();
         return response()->json([
-            'message' => 'List of users',
             'data' => $users
-        ], 200);
+        ]);
     }
 
     /**
@@ -48,7 +47,7 @@ class UserController extends Controller
             'avatar' => $validate['avatar'] ?? null,
         ]);
 
-        return response()->json(['message' => 'User created', 'data' => $user], 201);
+        return response()->json(['message' => 'User created', 'data' => $user]);
     }
 
     /**
@@ -60,12 +59,12 @@ class UserController extends Controller
         if (!$user) {
             return response()->json([
                 'message' => 'User not found'
-            ], 404);
+            ]);
         }
         return response()->json([
             'message' => 'User retrieved successfully',
             'data' => $user
-        ], 200);
+        ]);
     }
 
     /**
@@ -77,7 +76,7 @@ class UserController extends Controller
         if (!$user) {
             return response()->json([
                 'message' => 'User not found'
-            ], 404);
+            ]);
         }
 
         $validate = $request->validate([
@@ -102,7 +101,7 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User updated successfully',
             'data' => $user
-        ], 200);
+        ]);
     }
 
     /**
@@ -114,12 +113,12 @@ class UserController extends Controller
         if (!$user) {
             return response()->json([
                 'message' => 'User not found'
-            ], 404);
+            ]);
         }
         $user->delete();
         return response()->json([
             'message' => 'User deleted successfully'
-        ], 200);
+        ]);
     }
 
 

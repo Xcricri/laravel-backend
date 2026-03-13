@@ -39,10 +39,9 @@ class PageController extends Controller
         $page = Page::create($validated);
 
         return response()->json([
-            'success' => true,
             'message' => 'Halaman berhasil dibuat',
             'data' => $page
-        ], 201);
+        ]);
     }
 
     /**
@@ -82,7 +81,6 @@ class PageController extends Controller
         $page->update($validated);
 
         return response()->json([
-            'success' => true,
             'message' => 'Halaman berhasil diupdate',
             'data' => $page
         ]);
@@ -100,7 +98,6 @@ class PageController extends Controller
         $page->delete();
 
         return response()->json([
-            'success' => true,
             'message' => 'Halaman berhasil dihapus'
         ]);
     }

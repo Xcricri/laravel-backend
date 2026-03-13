@@ -18,7 +18,6 @@ class PortfolioController extends Controller
     {
         $portofolios = Portfolio::with('images')->latest()->get();
         return response()->json([
-            'success' => true,
             'data' => $portofolios
         ]);
     }
@@ -47,10 +46,9 @@ class PortfolioController extends Controller
         $this->saveImages($portfolio->id, $request);
 
         return response()->json([
-            'success' => true,
             'message' => 'Portfolio berhasil ditambahkan!',
             'data' => $portfolio
-        ], 201);
+        ]);
     }
 
     /**
@@ -61,7 +59,6 @@ class PortfolioController extends Controller
         $portfolio = Portfolio::where('slug', $slug)->with('images')->firstOrFail();
 
         return response()->json([
-            'success' => true,
             'data' => $portfolio
         ]);
     }
@@ -98,7 +95,6 @@ class PortfolioController extends Controller
         $this->saveImages($portfolio->id, $request);
 
         return response()->json([
-            'success' => true,
             'message' => 'Portfolio berhasil diupdate!',
             'data' => $portfolio->load('images')
         ]);
@@ -116,7 +112,6 @@ class PortfolioController extends Controller
         $portfolio->delete();
 
         return response()->json([
-            'success' => true,
             'message' => 'Portfolio deleted successfully'
         ]);
     }
@@ -140,6 +135,14 @@ class PortfolioController extends Controller
     // Menyimpan banyak image
     private function saveImages($portfolioId, Request $request)
     {
+        foreach ($request->file('images') as $index => $image) {
+            PortfolioImage::create([
+                'portfolio_id' => $portfolioId,
+                'image_url' => $this->uploadImage($image),
+                'caption' => $request->captions[$index] ?? null
+            ]);
+        }
+
         if (!$request->hasFile('images')) {
             return;
         }
@@ -149,14 +152,6 @@ class PortfolioController extends Controller
         foreach ($oldImages as $oldImage) {
             $this->deleteFile($oldImage->image_url);
             $oldImage->delete();
-        }
-
-        foreach ($request->file('images') as $index => $image) {
-            PortfolioImage::create([
-                'portfolio_id' => $portfolioId,
-                'image_url' => $this->uploadImage($image),
-                'caption' => $request->captions[$index] ?? null
-            ]);
         }
     }
 
