@@ -135,23 +135,23 @@ class PortfolioController extends Controller
     // Menyimpan banyak image
     private function saveImages($portfolioId, Request $request)
     {
-        foreach ($request->file('images') as $index => $image) {
-            PortfolioImage::create([
-                'portfolio_id' => $portfolioId,
-                'image_url' => $this->uploadImage($image),
-                'caption' => $request->captions[$index] ?? null
-            ]);
-        }
+        if ($request->hasFile('images')) {
 
-        if (!$request->hasFile('images')) {
-            return;
-        }
+            // Hapus gallery images lama
+            $oldImages = PortfolioImage::where('portfolio_id', $portfolioId)->get();
+            foreach ($oldImages as $oldImage) {
+                $this->deleteFile($oldImage->image_url);
+                $oldImage->delete();
+            }
 
-        // Hapus gallery images lama
-        $oldImages = PortfolioImage::where('portfolio_id', $portfolioId)->get();
-        foreach ($oldImages as $oldImage) {
-            $this->deleteFile($oldImage->image_url);
-            $oldImage->delete();
+            // Simpan gambar baru
+            foreach ($request->file('images') as $index => $image) {
+                PortfolioImage::create([
+                    'portfolio_id' => $portfolioId,
+                    'image_url' => $this->uploadImage($image),
+                    'caption' => $request->captions[$index] ?? null
+                ]);
+            }
         }
     }
 
