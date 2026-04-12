@@ -118,7 +118,7 @@ class PortfolioController extends Controller
 
     // Custom functions //
 
-    public function getId($id)
+    public function indexId($id)
     {
         $response = Portfolio::with('images')->findOrFail($id);
         return response()->json([

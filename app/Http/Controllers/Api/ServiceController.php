@@ -104,7 +104,7 @@ class ServiceController extends Controller
     // Custom function //
 
     // Admin: get id untuk edit
-    public function getId($id)
+    public function indexId($id)
     {
         $service = Service::findOrFail($id);
         return response()->json([

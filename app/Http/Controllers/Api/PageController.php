@@ -105,18 +105,12 @@ class PageController extends Controller
     // Custom Functions //
 
     // Admin: Get page untuk edit
-    public function getId($id)
+    public function indexId($id)
     {
         $page = Page::findOrFail($id);
         return response()->json([
             'data' => $page
         ]);
-    }
-
-    // Public: List semua pages untuk navigation
-    public function publicIndex()
-    {
-        return Page::select('id', 'title', 'slug')->get();
     }
 
     // Upload gambar
