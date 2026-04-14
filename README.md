@@ -1,56 +1,48 @@
-# Laravel API Backend - Documentation
+# Company-profile Backend API
 
-Repository ini berisi backend API untuk aplikasi Next Level yang dibangun menggunakan Laravel 12 dan Laravel Sanctum untuk autentikasi.
+Backend API untuk aplikasi company-profile, dibangun dengan Laravel 12 dan Laravel Sanctum untuk website company-profile.
 
-## Stack Teknologi
+## Tech Stack
 
-- **Framework:** Laravel 12
-- **Authentication:** Laravel Sanctum
-- **Database:** MySQL / SQLite (Sesuai konfigurasi `.env`)
-- **PHP Version:** ^8.2
+- Laravel 12
+- PHP ^8.2
+- Laravel Sanctum
+- MySQL / PostgreSQL / SQLite (sesuai konfigurasi `.env`)
 
-## Persyaratan Sistem
+## Fitur Utama
 
-- PHP >= 8.2
-- Composer
-- MySQL atau PostgreSQL (Opsional, bisa menggunakan SQLite)
+- Autentikasi API (login, logout) berbasis Sanctum
+- Public API untuk:
+    - pages
+    - services
+    - portfolios
+    - contact messages
+- Admin API (protected `auth:sanctum`) untuk kelola:
+    - users
+    - pages
+    - services
+    - portfolios
+    - messages
 
 ## Instalasi
 
-1. **Clone Repository dan Masuk ke Folder**
+1. Masuk ke folder `laravel-backend`.
+2. Install dependency Composer `composer install`.
+3. Copy file environment dari `.env.example` ke `.env`.
+4. Atur konfigurasi database pada `.env`.
+5. Generate application key.
+6. Jalankan migrasi dan seeder.
+7. Start server.
 
-    ```bash
-    git clone https://github.com/Xcricri/laravel-backend.git
-    cd backend
-    ```
+## Menjalankan Project
 
-2. **Install Dependensi**
+- `php artisan key:generate` → membuat key
+- `php artisan migrate --seed` → migrasi + data awal
+- `php artisan serve` → menjalankan API lokal
 
-    ```bash
-    composer install
-    ```
+Default local API: `http://127.0.0.1:8000`
 
-3. **Konfigurasi Environment**
-   Salin file `.env.example` ke `.env` dan sesuaikan konfigurasi database.
+## Catatan
 
-    ```bash
-    cp .env.example .env
-    ```
-
-4. **Generate App Key**
-
-    ```bash
-    php artisan key:generate
-    ```
-
-5. **Migrasi Database & Seeder**
-
-    ```bash
-    php artisan migrate --seed
-    ```
-
-6. **Jalankan Server**
-    ```bash
-    php artisan serve
-    ```
-    API akan berjalan secara default di `http://127.0.0.1:8000`.
+- Endpoint admin membutuhkan token Sanctum.
+- Pastikan URL backend ini diset pada frontend melalui `NEXT_PUBLIC_BACKEND_URL`.
