@@ -25,6 +25,7 @@ class ContactMessageController extends Controller
         $validated = $request->validate([
             'name' => 'required',
             'email' => 'required|email',
+            'subject' => 'nullable|string|max:150',
             'message' => 'required'
         ]);
 
@@ -49,9 +50,11 @@ class ContactMessageController extends Controller
     {
         $contactMessage = ContactMessage::findOrFail($id);
         $validated = $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'message' => 'required'
+            'name' => 'sometimes|required|string',
+            'email' => 'sometimes|required|email',
+            'subject' => 'nullable|string|max:150',
+            'message' => 'sometimes|required|string',
+            'is_read' => 'sometimes|boolean'
         ]);
         $contactMessage->update($validated);
         return response()->json($contactMessage);

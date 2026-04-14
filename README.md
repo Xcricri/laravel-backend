@@ -20,7 +20,7 @@ Repository ini berisi backend API untuk aplikasi Next Level yang dibangun menggu
 1. **Clone Repository dan Masuk ke Folder**
 
     ```bash
-    git clone <repository-url-backend>
+    git clone https://github.com/Xcricri/laravel-backend.git
     cd backend
     ```
 

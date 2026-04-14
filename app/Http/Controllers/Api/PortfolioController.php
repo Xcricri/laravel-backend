@@ -32,8 +32,8 @@ class PortfolioController extends Controller
             'short_description' => 'required|string|max:500',
             'full_content' => 'required|string',
             'project_date' => 'required|date',
-            'main_image' => 'required|image|max:2048',
-            'images.*' => 'image|max:2048',
+            'main_image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'captions.*' => 'nullable|string|max:255'
         ]);
 
@@ -73,8 +73,8 @@ class PortfolioController extends Controller
             'short_description' => 'sometimes|string|max:500',
             'full_content' => 'sometimes|string',
             'project_date' => 'sometimes|date',
-            'main_image' => 'nullable|image|max:2048',
-            'images.*' => 'image|max:2048',
+            'main_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'captions.*' => 'nullable|string|max:255'
         ]);
 
