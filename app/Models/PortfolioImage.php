@@ -13,6 +13,7 @@ class PortfolioImage extends Model
     protected $fillable = [
         'portfolio_id',
         'image_url',
+        'caption',
     ];
 
     public function portfolio()

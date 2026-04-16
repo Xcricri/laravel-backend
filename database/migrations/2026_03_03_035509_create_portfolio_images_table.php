@@ -17,6 +17,7 @@ return new class extends Migration
                 ->constrained('portfolios')
                 ->onDelete('cascade'); // kalau portfolio dihapus, gambar ikut terhapus
             $table->string('image_url');
+            $table->string('caption')->nullable();
             $table->timestamps();
         });
     }

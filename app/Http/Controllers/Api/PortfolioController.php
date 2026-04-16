@@ -33,8 +33,7 @@ class PortfolioController extends Controller
             'full_content' => 'required|string',
             'project_date' => 'required|date',
             'main_image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'captions.*' => 'nullable|string|max:255'
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120'
         ]);
 
         $validated['main_image_url'] = $this->uploadImage($request->file('main_image'));
@@ -43,7 +42,7 @@ class PortfolioController extends Controller
 
         $portfolio = Portfolio::create($validated);
 
-        $this->saveImages($portfolio->id, $request);
+        $this->saveImages($portfolio->id, $request, $portfolio->short_description);
 
         return response()->json([
             'message' => 'Portfolio berhasil ditambahkan!',
@@ -74,8 +73,7 @@ class PortfolioController extends Controller
             'full_content' => 'sometimes|string',
             'project_date' => 'sometimes|date',
             'main_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'captions.*' => 'nullable|string|max:255'
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120'
         ]);
 
         if (isset($validated['title'])) {
@@ -92,7 +90,7 @@ class PortfolioController extends Controller
 
         $portfolio->update($validated);
 
-        $this->saveImages($portfolio->id, $request);
+        $this->saveImages($portfolio->id, $request, $portfolio->short_description);
 
         return response()->json([
             'message' => 'Portfolio berhasil diupdate!',
@@ -133,7 +131,7 @@ class PortfolioController extends Controller
     }
 
     // Menyimpan banyak image
-    private function saveImages($portfolioId, Request $request)
+    private function saveImages($portfolioId, Request $request, ?string $defaultCaption = null)
     {
         if ($request->hasFile('images')) {
 
@@ -149,7 +147,7 @@ class PortfolioController extends Controller
                 PortfolioImage::create([
                     'portfolio_id' => $portfolioId,
                     'image_url' => $this->uploadImage($image),
-                    'caption' => $request->captions[$index] ?? null
+                    'caption' => $defaultCaption
                 ]);
             }
         }
